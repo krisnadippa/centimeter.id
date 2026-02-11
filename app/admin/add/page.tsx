@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Property } from "@/app/data/properties";
-import { Save, X, ArrowLeft } from "lucide-react";
+import { Save, X, ArrowLeft, MapPin, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { resolveGoogleMapsUrl } from "@/app/lib/utils";
 import { useRouter } from "next/navigation";
 
 export default function AddPropertyPage() {
@@ -26,22 +27,27 @@ export default function AddPropertyPage() {
   const [featuresInput, setFeaturesInput] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [uploading, setUploading] = useState(false);
+  const [resolvingMap, setResolvingMap] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
-    // Automatically extract src from iframe if pasted into google_maps_url
-    if (name === "google_maps_url") {
-        if (value.includes("<iframe")) {
-            const match = value.match(/src=["']([^"']+)["']/);
-            if (match && match[1]) {
-                setFormData((prev) => ({ ...prev, [name]: match[1] }));
-                return;
-            }
-        }
-    }
-
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleMapUrlBlur = async () => {
+      if (formData.google_maps_url) {
+          setResolvingMap(true);
+          try {
+              const resolved = await resolveGoogleMapsUrl(formData.google_maps_url);
+              if (resolved) {
+                  setFormData(prev => ({ ...prev, google_maps_url: resolved }));
+              }
+          } catch (error) {
+              console.error("Map resolution failed:", error);
+          } finally {
+              setResolvingMap(false);
+          }
+      }
   };
 
   const formatPrice = (value: string) => {
@@ -395,30 +401,48 @@ export default function AddPropertyPage() {
                     />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Google Maps Embed URL</label>
-                    <textarea
-                        name="google_maps_url"
-                        value={formData.google_maps_url || ""}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="https://www.google.com/maps/embed?pb=..."
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-mono"
-                    />
-                    <p className="text-xs text-gray-400 mt-1">Copy the &apos;src&apos; link from Google Maps Embed code (iframe).</p>
-                    
-                    {formData.google_maps_url && (formData.google_maps_url.includes("maps.app.goo.gl") || formData.google_maps_url.includes("goo.gl/maps")) && (
-                        <div className="mt-2 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-100 flex flex-col gap-1">
-                            <p className="font-bold">⚠️ Invalid Link Detected</p>
-                            <p>You are using a short link. This will NOT work in an iframe.</p>
-                            <p>Please use the <strong>Embed a map</strong> tab in Google Maps and copy the <strong>src</strong> attribute.</p>
-                        </div>
-                    )}
-                    
-                    {formData.google_maps_url && formData.google_maps_url.startsWith("https://") && !formData.google_maps_url.includes("google.com/maps/embed") && !formData.google_maps_url.includes("maps.app.goo.gl") && !formData.google_maps_url.includes("goo.gl/maps") && (
-                        <div className="mt-2 text-xs text-amber-500 bg-amber-50 p-2 rounded border border-amber-100 flex flex-col gap-1">
-                            <p className="font-bold">⚠️ Potential Issue</p>
-                            <p>This doesn&apos;t look like a standard Google Maps Embed URL. If the map doesn&apos;t show up, check the link format.</p>
+                {/* Google Maps URL */}
+                <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                        <MapPin size={16} className="text-primary" />
+                        Google Maps URL (Link Pendek atau Iframe)
+                    </label>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            name="google_maps_url"
+                            value={formData.google_maps_url}
+                            onChange={handleChange}
+                            onBlur={handleMapUrlBlur}
+                            placeholder="https://maps.app.goo.gl/..."
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-12"
+                        />
+                        {resolvingMap && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <Loader2 className="animate-spin text-primary" size={20} />
+                            </div>
+                        )}
+                    </div>
+                    <p className="text-xs text-gray-400">
+                        Tempelkan link dari Google Maps (Short link `maps.app.goo.gl` atau URL lengkap). Sistem akan otomatis mengubahnya menjadi tampilan peta.
+                    </p>
+
+                    {/* Live Preview Map */}
+                    {formData.google_maps_url && formData.google_maps_url.includes("google.com/maps/embed") && (
+                        <div className="rounded-xl overflow-hidden border border-gray-200 aspect-video w-full bg-gray-50 flex flex-col">
+                            <div className="bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-500 border-b border-gray-200 flex items-center gap-2">
+                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                Live Map Preview
+                            </div>
+                            <iframe
+                                src={formData.google_maps_url}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen={true}
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     )}
                 </div>

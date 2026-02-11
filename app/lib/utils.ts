@@ -15,7 +15,7 @@ export async function resolveGoogleMapsUrl(url: string | undefined): Promise<str
   // If it's already an embed URL, return as is
   if (url.includes("google.com/maps/embed")) return url;
   
-  // If it's an iframe tag, extract the src (done in UI, but good to have here as backup)
+  // If it's an iframe tag, extract the src
   if (url.includes("<iframe")) {
       const match = url.match(/src=["']([^"']+)["']/);
       if (match && match[1]) return match[1];
@@ -24,38 +24,43 @@ export async function resolveGoogleMapsUrl(url: string | undefined): Promise<str
   // If it's a direct Google Maps link (short or long)
   if (url.includes("goo.gl/maps") || url.includes("maps.app.goo.gl") || url.includes("google.com/maps")) {
     try {
-      console.log(`Resolving Google Maps URL: ${url}`);
-      const response = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-      });
+      let finalUrl = url;
       
-      const finalUrl = decodeURIComponent(response.url);
+      // If it's a short link, we need to resolve it
+      if (url.includes("goo.gl/maps") || url.includes("maps.app.goo.gl")) {
+          // If in browser, use our proxy to bypass CORS
+          if (typeof window !== 'undefined') {
+              const res = await fetch(`/api/utils/resolve-map?url=${encodeURIComponent(url)}`);
+              const data = await res.json();
+              if (data.finalUrl) finalUrl = data.finalUrl;
+          } else {
+              // On server, we can fetch directly
+              const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+              finalUrl = response.url;
+          }
+      }
+
+      const decodedUrl = decodeURIComponent(finalUrl);
       
       // Try to extract coordinates
-      const coordMatch = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      const coordMatch = decodedUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (coordMatch) {
          const lat = coordMatch[1];
          const lng = coordMatch[2];
          
-         // Generate an official Embed URL using the !1m18 (Place) format if possible
-         // We use the coordinates as the "Place" which forces a marker.
-         const pb = `!1m18!1m12!1m3!1d1000!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${lat}LCRsbmc!5e0!3m2!1sid!2sid!4v1700000000000`;
+         // This !1m17!1m12 format is stable and bypasses SAMEORIGIN blocks
+         // !3d is latitude, !2d is longitude
+         const pb = `!1m17!1m12!1m3!1d3944.3!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1s0x0%3A0x0!2z${lat},${lng}!5e0`;
          return `https://www.google.com/maps/embed?pb=${pb}`;
       }
       
-      // Fallback: If we couldn't resolve coordinates but have a search query in the final URL
-      const searchMatch = finalUrl.match(/q=([^&]+)/) || finalUrl.match(/\/place\/([^/]+)/);
+      // Fallback: If we couldn't resolve coordinates but have a search query
+      const searchMatch = decodedUrl.match(/q=([^&]+)/) || decodedUrl.match(/\/place\/([^/]+)/);
       if (searchMatch) {
-          const query = searchMatch[1];
-          // Classic embed format as a final fallback (might have SAMEORIGIN issues, but better than nothing)
-          return `https://maps.google.com/maps?q=${query}&output=embed`;
+          return `https://maps.google.com/maps?q=${searchMatch[1]}&output=embed`;
       }
     } catch (error) {
-      console.error("Failed to resolve Google Maps short link:", error);
+      console.error("Failed to resolve Google Maps link:", error);
     }
   }
   
