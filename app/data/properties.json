@@ -1,0 +1,108 @@
+[
+  {
+    "id": 1,
+    "title": "Luxury Cliffside Villa",
+    "price": "Rp 18.000.000.000",
+    "location": "Badung (Uluwatu)",
+    "beds": 4,
+    "baths": 5,
+    "area": "500 m²",
+    "image": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&q=80&w=2070",
+    "type": "Sale",
+    "category": "Villa",
+    "description": "Experience the ultimate luxury living in this stunning cliffside villa in Uluwatu. Offering breathtaking ocean views, infinity pool, and modern architecture.",
+    "images": [
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&q=80&w=2070",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2070",
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=2071"
+    ],
+    "features": [
+      "Ocean View",
+      "Infinity Pool",
+      "Smart Home System",
+      "Gym",
+      "Private Cinema"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Modern Beachfront Apartment",
+    "price": "Rp 35.000.000",
+    "location": "Badung (Canggu)",
+    "beds": 2,
+    "baths": 2,
+    "area": "120 m²",
+    "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2070",
+    "type": "Rent",
+    "category": "Apartment",
+    "description": "Stylish apartment located just steps away from the famous Batu Bolong beach. Fully furnished with high-end amenities.",
+    "images": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=2070",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=2080"
+    ],
+    "features": [
+      "Beach Access",
+      "Rooftop Pool",
+      "Security 24/7",
+      "Fully Furnished"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Premium Commercial Land",
+    "price": "Rp 1.500.000.000",
+    "location": "Badung (Berawa)",
+    "area": "20 Are",
+    "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=2232",
+    "type": "Sale",
+    "category": "Land",
+    "description": "Strategic commercial land in the booming area of Berawa. Perfect for a boutique hotel, restaurant, or beach club.",
+    "images": [
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=2232"
+    ],
+    "features": [
+      "Main Road Access",
+      "Commercial Zoning",
+      "High Traffic Area",
+      "Near Beach"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Family Home in Sanur",
+    "price": "Rp 4.500.000.000",
+    "location": "Denpasar (Sanur)",
+    "beds": 3,
+    "baths": 2,
+    "area": "250 m²",
+    "image": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=2070",
+    "type": "Sale",
+    "category": "House",
+    "description": "Charming family home located in the peaceful residential area of Sanur. Close to international schools and the beach.",
+    "images": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=2070",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=2070"
+    ],
+    "features": [
+      "Quiet Neighborhood",
+      "Garden",
+      "Garage",
+      "Maid Quarter"
+    ]
+  },
+  {
+    "title": "Tanah kosong tegallalang",
+    "price": "Rp 7.500.000.000",
+    "location": "Tegallalang",
+    "area": "1500 m²",
+    "image": "/uploads/1770825189481_tanah1.jpg",
+    "type": "Sale",
+    "category": "Land",
+    "description": "tess",
+    "images": [
+      "/uploads/1770825193624_tanah1.jpg"
+    ],
+    "features": [],
+    "id": 7
+  }
+]
