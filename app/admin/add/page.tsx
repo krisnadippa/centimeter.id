@@ -31,6 +31,18 @@ export default function AddPropertyPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Automatically extract src from iframe if pasted into google_maps_url
+    if (name === "google_maps_url") {
+        if (value.toLowerCase().includes("<iframe")) {
+            const match = value.match(/src=["']([^"']+)["']/i);
+            if (match && match[1]) {
+                setFormData((prev) => ({ ...prev, [name]: match[1] }));
+                return;
+            }
+        }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 

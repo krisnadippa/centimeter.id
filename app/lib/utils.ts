@@ -15,9 +15,9 @@ export async function resolveGoogleMapsUrl(url: string | undefined): Promise<str
   // If it's already an embed URL, return as is
   if (url.includes("google.com/maps/embed")) return url;
   
-  // If it's an iframe tag, extract the src
-  if (url.includes("<iframe")) {
-      const match = url.match(/src=["']([^"']+)["']/);
+  // If it's an iframe tag, extract the src (case-insensitive and robust regex)
+  if (url.toLowerCase().includes("<iframe")) {
+      const match = url.match(/src=["']([^"']+)["']/i);
       if (match && match[1]) return match[1];
   }
 
